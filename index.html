@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Plano TAF — 8 semanas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#DCE1DB; --card:#F2F4F0; --ink:#16241D; --ink2:#43564C;
+  --muted:#7C8B82; --line:#B9C3BA; --corte:#B93A2B; --ok:#2C6B4E;
+  --gold:#966C12; --sun:#EDEFEA; --blk:#171917;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:15px;line-height:1.45;
+  padding:0 0 64px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:660px;margin:0 auto;padding:0 13px}
+h1{font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.04em;margin:0}
+.mono{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
+
+header{padding:22px 0 14px;border-bottom:2px solid var(--ink)}
+header h1{font-size:33px;font-weight:700;line-height:.95}
+.hsub{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--muted);margin-top:7px}
+
+.tabs{display:flex;gap:0;margin:14px 0 4px;border:1px solid var(--line);border-radius:3px;overflow:hidden;background:var(--card)}
+.tab{flex:1;padding:10px 4px;text-align:center;font-family:'Barlow Condensed',sans-serif;
+  font-weight:600;font-size:16px;text-transform:uppercase;letter-spacing:.05em;
+  color:var(--ink2);cursor:pointer;border-right:1px solid var(--line)}
+.tab:last-child{border-right:none}
+.tab.on{background:var(--ink);color:var(--paper)}
+
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:13px 0 4px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:11px 12px}
+.stat .k{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--muted)}
+.stat .v{font-family:'Barlow Condensed',sans-serif;font-size:27px;font-weight:700;line-height:1.1;margin-top:2px}
+.stat .v small{font-size:14px;font-weight:600;color:var(--ink2)}
+.bar{height:5px;background:#D3D9D2;border-radius:3px;margin-top:9px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--ok);width:0;transition:width .4s}
+
+.marks{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--corte);
+  border-radius:3px;padding:11px 13px;margin-top:9px;font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1.75}
+.marks b{color:var(--corte)} .marks i{color:var(--gold);font-style:normal}
+
+.wknav{display:flex;gap:5px;overflow-x:auto;padding:15px 0 6px;scrollbar-width:none}
+.wknav::-webkit-scrollbar{display:none}
+.wkb{flex:0 0 auto;min-width:44px;padding:8px 0;text-align:center;background:var(--card);
+  border:1px solid var(--line);border-radius:3px;font-family:'Barlow Condensed',sans-serif;
+  font-weight:600;font-size:16px;color:var(--ink2);cursor:pointer;text-transform:uppercase}
+.wkb.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.wkb.full{border-color:var(--ok);color:var(--ok)}
+.wkb.on.full{background:var(--ok);color:#fff}
+
+.wkhead{margin:17px 0 10px}
+.wkhead .n{font-family:'Barlow Condensed',sans-serif;font-size:25px;font-weight:700;line-height:1}
+.wkhead .d{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);
+  letter-spacing:.1em;text-transform:uppercase;margin-top:3px}
+
+.day{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--line);
+  border-radius:3px;margin-bottom:8px;overflow:hidden}
+.day.corrida{border-left-color:var(--ink2)}
+.day.barra{border-left-color:var(--gold)}
+.day.prova{border-left-color:var(--corte)}
+.day.folga{border-left-color:var(--line);opacity:.7}
+.day.ok{border-left-color:var(--ok)}
+.day.hoje{box-shadow:0 0 0 2px var(--ink)}
+.dh{display:flex;align-items:center;gap:11px;padding:12px 13px;cursor:pointer}
+.dd{flex:0 0 42px;text-align:center}
+.dd .dw{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;
+  text-transform:uppercase;letter-spacing:.04em;line-height:1}
+.dd .dn{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);margin-top:2px}
+.dc{flex:1;min-width:0}
+.tag{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.11em;
+  text-transform:uppercase;padding:2px 6px;border-radius:2px;background:var(--ink2);color:var(--card);margin-bottom:4px}
+.tag.p{background:var(--corte)} .tag.b{background:var(--gold)} .tag.f{background:var(--muted)}
+.dt{font-size:14px;font-weight:600;line-height:1.3}
+.ds{font-size:12.5px;color:var(--ink2);margin-top:2px}
+.ck{flex:0 0 27px;width:27px;height:27px;border:1.5px solid var(--line);border-radius:50%;
+  background:#fff;display:grid;place-items:center;font-size:14px;color:transparent}
+.day.ok .ck{background:var(--ok);border-color:var(--ok);color:#fff}
+.hj{font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.12em;background:var(--ink);
+  color:var(--paper);padding:1px 5px;border-radius:2px;margin-left:5px;vertical-align:2px}
+.det{display:none;padding:0 13px 14px;border-top:1px dashed var(--line)}
+.day.open .det{display:block}
+
+.sec{margin-top:12px}
+.sl{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:5px}
+.sb{background:var(--sun);border:1px solid var(--line);border-radius:3px;padding:10px 11px;font-size:13.5px;line-height:1.6}
+.sb.key{background:#fff;border-left:2px solid var(--ink)}
+.sb ol,.sb ul{margin:0;padding-left:17px} .sb li{margin:2px 0}
+code{font-family:'IBM Plex Mono',monospace;font-size:12.5px;background:#E2E7E0;padding:1px 4px;border-radius:2px}
+.tot{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--muted);margin-top:7px;letter-spacing:.05em}
+
+/* bloco adidas */
+.ad{background:var(--blk);color:#EDEFEA;border-radius:3px;padding:11px 12px;
+  font-family:'IBM Plex Mono',monospace;font-size:12.5px;line-height:1.65}
+.ad .tpl{display:inline-block;background:#C8E6A0;color:#171917;font-weight:600;
+  padding:2px 7px;border-radius:2px;font-size:12px;margin-bottom:8px}
+.ad table{width:100%;border-collapse:collapse;margin-top:2px}
+.ad td{padding:4px 0;border-bottom:1px solid #333;vertical-align:top;font-size:12.5px}
+.ad tr:last-child td{border-bottom:none}
+.ad td:first-child{color:#8FA88C;white-space:nowrap;padding-right:10px;width:34%}
+.ad b{color:#C8E6A0;font-weight:600}
+.ad .rep{color:#E8C87A}
+
+table.t{width:100%;border-collapse:collapse;font-size:13px}
+table.t td{padding:4px 0;border-bottom:1px solid var(--line);vertical-align:top}
+table.t td:first-child{font-family:'IBM Plex Mono',monospace;white-space:nowrap;padding-right:11px;color:var(--ink2)}
+table.t tr:last-child td{border-bottom:none}
+
+input.res{width:100%;margin-top:10px;padding:9px 10px;border:1px solid var(--line);border-radius:2px;
+  background:#fff;font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--ink)}
+input.res:focus{outline:2px solid var(--ink2);outline-offset:1px}
+
+/* aba padrões */
+.pcard{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--ink2);
+  border-radius:3px;margin-bottom:9px;overflow:hidden}
+.ph{padding:12px 13px;cursor:pointer;display:flex;align-items:center;gap:10px}
+.ph .pn{flex:1}
+.ph .pt{font-family:'Barlow Condensed',sans-serif;font-size:19px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.03em;line-height:1.1}
+.ph .pu{font-size:12.5px;color:var(--ink2);margin-top:2px}
+.ph .ar{font-family:'IBM Plex Mono',monospace;color:var(--muted);font-size:15px}
+.pcard.open .ar{transform:rotate(90deg)}
+.ar{transition:transform .2s}
+.pb{display:none;padding:0 13px 14px} .pcard.open .pb{display:block}
+.note{background:#fff;border:1px solid var(--line);border-left:3px solid var(--gold);
+  border-radius:3px;padding:11px 13px;font-size:13.5px;line-height:1.6;margin-bottom:14px}
+.note b{color:var(--gold)}
+.h2{font-family:'Barlow Condensed',sans-serif;font-size:23px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.03em;margin:20px 0 9px;line-height:1}
+.h2:first-child{margin-top:16px}
+
+.bkp{margin-top:22px;background:var(--card);border:1px solid var(--line);border-radius:3px;padding:12px 13px}
+.bl{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:8px}
+.bbs{display:flex;gap:6px;flex-wrap:wrap}
+.bbs button{flex:1;min-width:96px;padding:9px 6px;border:1px solid var(--line);border-radius:2px;
+  background:#fff;color:var(--ink);font-family:'Barlow Condensed',sans-serif;font-weight:600;
+  font-size:15px;text-transform:uppercase;letter-spacing:.04em;cursor:pointer}
+.bbs button:active{background:var(--sun)}
+.bbs button.dg{color:var(--corte);border-color:#D8B4AD}
+.bn{font-size:12px;color:var(--ink2);line-height:1.5;margin-top:9px}
+footer{margin-top:20px;padding-top:14px;border-top:1px solid var(--line);
+  font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);line-height:1.7}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:20px;background:var(--ink);color:var(--paper);
+  padding:9px 17px;border-radius:3px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;
+  opacity:0;transition:opacity .25s;pointer-events:none;z-index:60}
+.toast.on{opacity:1}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Plano TAF<br>8 semanas</h1>
+  <div class="hsub">30 ago &rarr; 24 out 2026 &middot; Corrida 3.200 m &middot; Barra fixa</div>
+</header>
+
+<div class="tabs">
+  <div class="tab on" data-t="cal">Calendário</div>
+  <div class="tab" data-t="pad">Padrões adidas</div>
+  <div class="tab" data-t="rit">Ritmos</div>
+</div>
+
+<div id="vCal">
+  <div class="stats">
+    <div class="stat"><div class="k">Dias marcados</div><div class="v" id="sDone">0<small>/56</small></div>
+      <div class="bar"><i id="sBar"></i></div></div>
+    <div class="stat"><div class="k">Faltam para a prova</div><div class="v" id="sDays">—<small> dias</small></div>
+      <div class="bar"><i id="sBar2"></i></div></div>
+  </div>
+  <div class="marks">
+    Corrida &nbsp;<b>mín 15:28</b> &nbsp;·&nbsp; <i>grau 10 &nbsp;13:04</i><br>
+    Barra &nbsp;&nbsp;&nbsp;&nbsp;<b>mín 7 rep</b> &nbsp;·&nbsp; <i>grau 10 &nbsp;15 rep</i><br>
+    Volta de 400 m &nbsp;<b>1:56 = 15:28</b> &nbsp;·&nbsp; 1:52 = 15:00
+  </div>
+  <div class="wknav" id="nav"></div>
+  <div class="wkhead"><div class="n" id="wkN"></div><div class="d" id="wkD"></div></div>
+  <div id="list"></div>
+</div>
+
+<div id="vPad" style="display:none"></div>
+<div id="vRit" style="display:none"></div>
+
+<div class="bkp">
+  <div class="bl">Backup</div>
+  <div class="bbs">
+    <button onclick="exportar()">Baixar backup</button>
+    <button onclick="document.getElementById('fimp').click()">Restaurar</button>
+    <button class="dg" onclick="zerar()">Zerar tudo</button>
+  </div>
+  <input type="file" id="fimp" accept="application/json" style="display:none" onchange="importar(event)">
+  <div class="bn">As marcações ficam salvas neste navegador. Se limpar os dados do navegador ou trocar de aparelho, elas somem — baixe um backup de vez em quando.</div>
+</div>
+
+<footer>
+  Tudo salvo automaticamente neste navegador.<br>
+  GtG nunca até a falha — pare sentindo que faria mais 2 ou 3.<br>
+  Dor na face interna do cotovelo por 48 h → corte o volume de barra pela metade.
+</footer>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= blocos reutilizáveis ================= */
+const AQ = `<ol>
+<li><b>4 min</b> — trote muito leve, 7:00/km ou mais lento</li>
+<li><b>2 min</b> — mobilidade: 10 balanços de perna à frente e 10 laterais por lado, rotação de quadril, círculo de braço</li>
+<li><b>3 min</b> — 4× tiro de 20 s progressivo, caminhando 40 s entre eles</li>
+<li><b>1 min</b> — respiração e posicionamento</li></ol>`;
+const DE = `8–10 min de trote muito leve (7:00/km ou mais lento). Não corte — é aqui que a recuperação começa.`;
+const FORCA = `<table class="t">
+<tr><td>Búlgaro</td><td>3×10 cada perna</td></tr>
+<tr><td>Afundo caminhando</td><td>3×12</td></tr>
+<tr><td>Panturrilha unilateral</td><td>4×15 cada</td></tr>
+<tr><td>Stiff ou ponte de glúteo</td><td>3×12</td></tr>
+<tr><td>Prancha frontal + lateral</td><td>3×40 s</td></tr>
+<tr><td>Saltos verticais</td><td>3×10</td></tr></table>`;
+const FORCA_L = `<table class="t">
+<tr><td>Búlgaro</td><td>2×10 cada perna</td></tr>
+<tr><td>Panturrilha unilateral</td><td>3×15 cada</td></tr>
+<tr><td>Prancha frontal + lateral</td><td>3×40 s</td></tr>
+<tr><td>Saltos</td><td>não fazer nesta semana</td></tr></table>`;
+const BA = `<table class="t">
+<tr><td>Negativa na barra</td><td>6×1 — sobe de salto, desce em 5–6 s</td></tr>
+<tr><td>Isometria no topo</td><td>3× de 20–30 s, queixo acima</td></tr>
+<tr><td>Remada invertida</td><td>3×10</td></tr>
+<tr><td>Face pull / elástico</td><td>3×15 — não pule</td></tr></table>`;
+const BA_L = `<table class="t">
+<tr><td>Negativa na barra</td><td>5×1 — desce em 5 s</td></tr>
+<tr><td>Face pull / elástico</td><td>3×15</td></tr></table>`;
+const BA_LASTRO = `<table class="t">
+<tr><td>Barra com lastro</td><td>5×3 — mochila 5–8 kg, 1 rep na reserva</td></tr>
+<tr><td>Isometria no topo</td><td>3× de 25–30 s</td></tr>
+<tr><td>Remada invertida</td><td>3×10</td></tr>
+<tr><td>Face pull / elástico</td><td>3×15</td></tr></table>`;
+
+/* ============ construtor de bloco adidas ============ */
+// linhas: [rótulo, valor]  |  rep: {n, de, ate}
+function adBlk(tpl,rows,foot){
+  let h=`<div class="tpl">${tpl}</div><table>`;
+  rows.forEach(r=>{h+=`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`;});
+  h+='</table>';
+  if(foot)h+=`<div style="margin-top:9px;color:#9AB197">${foot}</div>`;
+  return h;
+}
+const AJ_PACE='Se o app não aceitar ritmo-alvo por bloco, deixe o bloco só com a distância e confira o tempo no relógio ao fim de cada tiro.';
+
+/* ================= plano ================= */
+function easy(km,tiros){return{
+  t:`Rodagem fácil ${km} km`,s:`Pace 6:30/km + ${tiros} tiros`,tag:'Fácil',tipo:'corrida',
+  run:{aq:'Trote leve nos 2 primeiros km — o aquecimento é a própria corrida.',
+  pr:`<b>${km} km contínuos em 6:30/km</b> (faixa aceitável 6:20–6:55).<br><br>Ao terminar: <code>${tiros}× tiro de 20 s forte</code>, caminhando 60 s entre eles.<br><br>Se estiver correndo abaixo de 6:20, <b>segure</b>. Dia fácil rápido demais é o erro nº 1 do plano.`,
+  de:'Caminhada de 5 min + alongamento leve.',tot:`${km} km + tiros`,
+  ad:adBlk('TAF · Fácil + Tiros',[
+    ['Bloco 2 — Corrida',`<b>${km},0 km</b> · alvo 6:30/km`],
+    ['Bloco 3-4 — Tiros',`repetir <span class="rep">×${tiros}</span>`],
+    ['Demais blocos','sem alteração']
+  ],'Só esses campos mudam. O resto do padrão fica como está salvo.')}};}
+
+const P=[
+{n:'Semana 1 · Carga leve + aferição',d:[
+  {t:'Descanso total',s:'Sem corrida, sem barra, sem GtG',tag:'Folga',tipo:'folga'},
+  {t:'Teste máximo na barra + rodagem fácil',s:'Manhã: máximo · Tarde: 5 km',tag:'Aferição',tipo:'prova',
+   nota:`<b>Ordem obrigatória:</b> teste a barra de manhã, descansado. Domingo de folga te dá o maior frescor do ciclo.<br><br>
+   <b>Aquecimento do teste:</b><ol><li>3 min mobilidade de ombro + elástico</li><li>1×3 repetições fáceis → 2 min de pausa</li>
+   <li>1×4 repetições fáceis → <b>4 min de pausa completa</b></li><li>Máximo</li></ol>
+   Pegada supinada ou pronada, largura dos ombros, extensão total embaixo, queixo acima da barra, <b>sem impulso</b>.<br><br>Um teste só. Não repete até a semana 3.`,
+   run:{aq:'Trote leve nos 2 primeiros km.',pr:'<b>5 km em 6:30/km</b> + 5 tiros de 20 s ao final.',
+   de:'Caminhada 5 min.',tot:'5 km + tiros',
+   ad:adBlk('TAF · Fácil + Tiros',[['Bloco 2 — Corrida','<b>5,0 km</b> · alvo 6:30/km'],['Bloco 3-4 — Tiros','repetir <span class="rep">×5</span>']])}},
+  {t:'6×400 m no ritmo de prova',s:'Aquec + 6 tiros + desaq · + força de perna',tag:'Intervalado',tipo:'corrida',
+   run:{aq:AQ,pr:`<table class="t">
+   <tr><td>6× 400 m</td><td><b>1:52 cada</b> (faixa 1:50–1:55)</td></tr>
+   <tr><td>Recuperação</td><td>90 s de <b>trote lento</b>, não parado</td></tr></table>
+   <br><b>Não olhe o relógio durante o tiro.</b> Olhe só o tempo da volta ao terminar. Corrigir ritmo em cima de pace instantâneo instável queima a perna.`,
+   de:DE,tot:'≈ 7 km no total',
+   ad:adBlk('TAF · 400 m',[
+     ['Repetições','<span class="rep">6×</span>'],
+     ['Bloco Intervalo','<b>400 m</b> · alvo <b>1:52</b> (4:40/km)'],
+     ['Bloco Recuperação','<b>90 s</b> · trote 7:00/km'],
+     ['Aquecimento / Desaq.','10 min cada — sem alteração']],AJ_PACE)},forca:FORCA},
+  {t:'Barra pesado A — Força',s:'Negativas, isometria, remada',tag:'Barra',tipo:'barra',barra:BA},
+  {t:'Limiar 2×10 min',s:'Aquec + 2 blocos + desaq',tag:'Limiar',tipo:'corrida',
+   run:{aq:AQ,pr:`<table class="t">
+   <tr><td>2× 10 min</td><td><b>5:25/km</b> (faixa 5:20–5:30)</td></tr>
+   <tr><td>Recuperação</td><td>3 min de trote lento</td></tr></table>
+   <br>Sensação correta: <b>confortavelmente difícil</b>. Dá para falar frases curtas, não conversar.`,
+   de:DE,tot:'≈ 8 km no total',
+   ad:adBlk('TAF · Limiar',[
+     ['Repetições','<span class="rep">2×</span>'],
+     ['Bloco Limiar','<b>10 min</b> · alvo <b>5:25/km</b>'],
+     ['Bloco Recuperação','<b>3 min</b> · trote lento'],
+     ['Aquecimento / Desaq.','10 min cada']])}},
+  {t:'Barra pesado B — Densidade',s:'5×4 · rec 90 s',tag:'Barra',tipo:'barra',
+   barra:`<table class="t"><tr><td>Barra fixa</td><td>5 séries × 4 repetições</td></tr>
+   <tr><td>Descanso</td><td>90 s entre séries</td></tr><tr><td>Face pull</td><td>3×15</td></tr></table>
+   <br>Volume leve de propósito — o teste é amanhã.`},
+  {t:'TESTE 3,2 km cronometrado',s:'Marca oficial do ciclo',tag:'Aferição',tipo:'prova',
+   nota:`<b>Este é o número que calibra todo o resto do plano.</b> Chegue descansado — foi por isso que quinta e sexta foram leves.<br><br>Horário: 5h–6h, calor mínimo. Pista de 400 m se possível.`,
+   run:{aq:AQ,pr:`<b>3.200 m no máximo esforço.</b><br><br>
+   <table class="t"><tr><td>Volta 1–2</td><td>1:56 — vai parecer devagar. É pra ser.</td></tr>
+   <tr><td>Volta 3–6</td><td>1:54–1:56, ritmo travado</td></tr>
+   <tr><td>Volta 7–8</td><td>Tudo o que sobrou</td></tr></table>
+   <br>Aperte o botão de volta a cada 400 m. <b>Anote os 8 parciais.</b>`,
+   de:'10 min de trote muito leve + caminhada.',tot:'≈ 7 km com aquec e desaq',
+   ad:adBlk('TAF · Teste 3.200 m',[
+     ['Bloco central','<b>3,20 km</b> · sem alvo de ritmo'],
+     ['Aquecimento / Desaq.','10 min cada'],
+     ['Auto-lap do relógio','ligar a cada 400 m']],
+     'O tempo que vale é o do cronômetro do relógio, não o do GPS.')}}
+]},
+
+{n:'Semana 2 · Carga',d:[
+  {t:'Descanso total',s:'Sem corrida, sem barra, sem GtG',tag:'Folga',tipo:'folga'},
+  easy(5,5),
+  {t:'4×800 m',s:'Aquec + 4 tiros + desaq · + força de perna',tag:'Intervalado',tipo:'corrida',
+   run:{aq:AQ,pr:`<table class="t"><tr><td>4× 800 m</td><td><b>3:52 cada</b> (1:56/volta)</td></tr>
+   <tr><td>Recuperação</td><td>2 min de trote lento</td></tr></table>
+   <br>Ritmo idêntico ao do mínimo do TAF. É a sessão que ensina o corpo a reconhecer esse ritmo.`,
+   de:DE,tot:'≈ 8 km no total',
+   ad:adBlk('TAF · 800 m',[
+     ['Repetições','<span class="rep">4×</span>'],
+     ['Bloco Intervalo','<b>800 m</b> · alvo <b>3:52</b> (4:50/km)'],
+     ['Bloco Recuperação','<b>2 min</b> · trote lento'],
+     ['Aquecimento / Desaq.','10 min cada']],AJ_PACE)},forca:FORCA},
+  {t:'Barra pesado A — Força',s:'Negativas, isometria, remada',tag:'Barra',tipo:'barra',barra:BA},
+  {t:'Limiar 2×12 min',s:'Aquec + 2 blocos + desaq',tag:'Limiar',tipo:'corrida',
+   run:{aq:AQ,pr:`<table class="t"><tr><td>2× 12 min</td><td><b>5:20/km</b></td></tr>
+   <tr><td>Recuperação</td><td>3 min de trote lento</td></tr></table>`,
+   de:DE,tot:'≈ 8,5 km no total',
+   ad:adBlk('TAF · Limiar',[
+     ['Repetições','<span class="rep">2×</span>'],
+     ['Bloco Limiar','<b>12 min</b> · alvo <b>5:20/km</b>'],
+     ['Bloco Recuperação','<b>3 min</b>']])}},
+  {t:'Barra pesado B — Densidade',s:'5×4 · rec 90 s',tag:'Barra',tipo:'barra',
+   barra:`<table class="t"><tr><td>Barra fixa</td><td>5 séries × 4 repetições</td></tr>
+   <tr><td>Descanso</td><td>90 s</td></tr><tr><td>Face pull</td><td>3×15</td></tr></table>`},
+  {t:'Longão 9 km com final progressivo',s:'Últimos 2 km em 5:40',tag:'Longão',tipo:'corrida',
+   run:{aq:'Os 2 primeiros km já são o aquecimento — comece lento.',
+   pr:`<table class="t"><tr><td>km 1–7</td><td>6:30/km, confortável</td></tr>
+   <tr><td>km 8–9</td><td><b>5:40/km</b></td></tr></table>
+   <br><b>Esta é a sessão que ataca seu ponto fraco.</b> Acelerar com perna cansada é o que constrói o gás final. Se apagar, anote onde.`,
+   de:'Caminhada 8 min + alongamento.',tot:'9 km',
+   ad:adBlk('TAF · Longão progressivo',[
+     ['Bloco 1 — Base','<b>7,0 km</b> · alvo 6:30/km'],
+     ['Bloco 2 — Final','<b>2,0 km</b> · alvo <b>5:40/km</b>'],
+     ['Bloco 3 — Desaq.','5 min caminhada']],
+     'O aviso sonoro na virada do bloco 1 para o 2 é o que faz esta sessão funcionar. Deixe o áudio ligado.')}}
+]},
+
+{n:'Semana 3 · Leve + aferição dupla',d:[
+  {t:'Descanso total',s:'Sem corrida, sem barra, sem GtG',tag:'Folga',tipo:'folga'},
+  easy(5,5),
+  {t:'4×400 m rápidos',s:'Volume baixo, intensidade alta · força leve',tag:'Intervalado',tipo:'corrida',
+   run:{aq:AQ,pr:`<table class="t"><tr><td>4× 400 m</td><td><b>1:50 cada</b></td></tr>
+   <tr><td>Recuperação</td><td>2 min de trote lento</td></tr></table>
+   <br>Poucos tiros de propósito — sábado tem aferição dupla.`,
+   de:DE,tot:'≈ 6 km no total',
+   ad:adBlk('TAF · 400 m',[
+     ['Repetições','<span class="rep">4×</span>'],
+     ['Bloco Intervalo','<b>400 m</b> · alvo <b>1:50</b> (4:35/km)'],
+     ['Bloco Recuperação','<b>2 min</b>']])},forca:FORCA_L},
+  {t:'Barra pesado A — Lastro',s:'Primeira semana com carga',tag:'Barra',tipo:'barra',barra:BA_LASTRO,
+   nota:`<b>Como escolher o lastro:</b> comece com o peso que te permite exatamente 3 repetições limpas com 1 na reserva. Quando conseguir 5 com essa carga, some 2 kg.<br><br>Se seu máximo ainda for menor que 8, mantenha as negativas do bloco anterior no lugar do lastro.`},
+  {t:'Limiar 15 min',s:'Bloco único, curto',tag:'Limiar',tipo:'corrida',
+   run:{aq:AQ,pr:`<b>15 min contínuos em 5:30/km.</b><br><br>Sessão de manutenção. Não force.`,
+   de:DE,tot:'≈ 6,5 km no total',
+   ad:adBlk('TAF · Limiar',[
+     ['Repetições','<span class="rep">1×</span>'],
+     ['Bloco Limiar','<b>15 min</b> · alvo <b>5:30/km</b>'],
+     ['Bloco Recuperação','remover ou deixar em 0']])}},
+  {t:'Barra leve',s:'Só negativas e face pull',tag:'Barra',tipo:'barra',barra:BA_L,nota:'Poupar para o teste de amanhã.'},
+  {t:'TESTE 3,2 km + máximo na barra',s:'Corrida primeiro, barra 30 min depois',tag:'Aferição',tipo:'prova',
+   nota:`<b>Ordem:</b> corrida → 30 min de pausa → máximo na barra.<br><br>Testar a barra cansado é intencional: se no dia da avaliação a barra vier depois da corrida, você precisa saber quanto perde. Anote os dois números.`,
+   run:{aq:AQ,pr:`<b>3.200 m no máximo esforço.</b> Mesma estratégia: 1:56 nas duas primeiras voltas, acelera nas duas últimas. Anote os 8 parciais.`,
+   de:'10 min de trote muito leve.',tot:'≈ 7 km com aquec e desaq',
+   ad:adBlk('TAF · Teste 3.200 m',[['Bloco central','<b>3,20 km</b> · sem alvo'],['Auto-lap','a cada 400 m']])}}
+]},
+
+{n:'Semana 4 · Carga',d:[
+  {t:'Descanso total',s:'Sem corrida, sem barra, sem GtG',tag:'Folga',tipo:'folga'},
+  easy(6,5),
+  {t:'2×1600 m',s:'Blocos longos no ritmo de prova · + força',tag:'Intervalado',tipo:'corrida',
+   run:{aq:AQ,pr:`<table class="t"><tr><td>2× 1600 m</td><td><b>7:44 cada</b> (1:56/volta)</td></tr>
+   <tr><td>Recuperação</td><td>3 min de trote lento</td></tr></table>
+   <br>Metade da prova, duas vezes. Sessão mentalmente dura — é onde você descobre se o ritmo de 1:56 já está confortável.`,
+   de:DE,tot:'≈ 8 km no total',
+   ad:adBlk('TAF · 1600 m',[
+     ['Repetições','<span class="rep">2×</span>'],
+     ['Bloco Intervalo','<b>1,60 km</b> · alvo <b>7:44</b> (4:50/km)'],
+     ['Bloco Recuperação','<b>3 min</b>']],AJ_PACE)},forca:FORCA},
+  {t:'Barra pesado A — Lastro',s:'5×3 com carga',tag:'Barra',tipo:'barra',barra:BA_LASTRO},
+  {t:'Limiar 3×10 min',s:'Aquec + 3 blocos + desaq',tag:'Limiar',tipo:'corrida',
+   run:{aq:AQ,pr:`<table class="t"><tr><td>3× 10 min</td><td><b>5:20/km</b></td></tr>
+   <tr><td>Recuperação</td><td>2 min de trote lento</td></tr></table>`,
+   de:DE,tot:'≈ 9 km no total',
+   ad:adBlk('TAF · Limiar',[
+     ['Repetições','<span class="rep">3×</span>'],
+     ['Bloco Limiar','<b>10 min</b> · alvo <b>5:20/km</b>'],
+     ['Bloco Recuperação','<b>2 min</b>']])}},
+  {t:'Barra pesado B — Escada',s:'1-2-3-4-3-2-1 · duas vezes',tag:'Barra',tipo:'barra',
+   barra:`<table class="t"><tr><td>Escada</td><td>1 → 2 → 3 → 4 → 3 → 2 → 1</td></tr>
+   <tr><td>Descanso</td><td>o mesmo tempo que a série levou</td></tr>
+   <tr><td>Repetir</td><td>2 rodadas, 5 min entre elas</td></tr>
+   <tr><td>Face pull</td><td>3×15</td></tr></table>
+   <br>16 repetições por rodada. É esta sessão que constrói resistência de repetição.`},
+  {t:'Longão 10 km com final progressivo',s:'Últimos 3 km em 5:35',tag:'Longão',tipo:'corrida',
+   run:{aq:'Comece lento — os 2 primeiros km são o aquecimento.',
+   pr:`<table class="t"><tr><td>km 1–7</td><td>6:30/km</td></tr><tr><td>km 8–10</td><td><b>5:35/km</b></td></tr></table>`,
+   de:'Caminhada 8 min + alongamento.',tot:'10 km',
+   ad:adBlk('TAF · Longão progressivo',[
+     ['Bloco 1 — Base','<b>7,0 km</b> · alvo 6:30/km'],
+     ['Bloco 2 — Final','<b>3,0 km</b> · alvo <b>5:35/km</b>']])}}
+]},
+
+{n:'Semana 5 · Carga',d:[
+  {t:'Descanso total',s:'Sem corrida, sem barra, sem GtG',tag:'Folga',tipo:'folga'},
+  easy(6,6),
+  {t:'3×1000 m',s:'Ritmo mais forte que o de prova · + força',tag:'Intervalado',tipo:'corrida',
+   run:{aq:AQ,pr:`<table class="t"><tr><td>3× 1000 m</td><td><b>4:45 cada</b> (1:54/volta)</td></tr>
+   <tr><td>Recuperação</td><td>2 min de trote lento</td></tr></table>
+   <br>Mais rápido que o ritmo do mínimo. Serve para o 1:56 parecer fácil no dia da prova.`,
+   de:DE,tot:'≈ 7,5 km no total',
+   ad:adBlk('TAF · 1000 m',[
+     ['Repetições','<span class="rep">3×</span>'],
+     ['Bloco Intervalo','<b>1,00 km</b> · alvo <b>4:45</b>'],
+     ['Bloco Recuperação','<b>2 min</b>']],AJ_PACE)},forca:FORCA},
+  {t:'Barra pesado A — Lastro',s:'5×3, aumentar carga',tag:'Barra',tipo:'barra',barra:BA_LASTRO},
+  {t:'Limiar 25 min contínuos',s:'Bloco único longo',tag:'Limiar',tipo:'corrida',
+   run:{aq:AQ,pr:`<b>25 min contínuos em 5:15/km.</b><br><br>O bloco de limiar mais longo do ciclo. Se não sustentar, reduza para 5:25 e me avise.`,
+   de:DE,tot:'≈ 9 km no total',
+   ad:adBlk('TAF · Limiar',[
+     ['Repetições','<span class="rep">1×</span>'],
+     ['Bloco Limiar','<b>25 min</b> · alvo <b>5:15/km</b>'],
+     ['Bloco Recuperação','remover']])}},
+  {t:'Barra pesado B — 6×5',s:'Descanso curto, 60 s',tag:'Barra',tipo:'barra',
+   barra:`<table class="t"><tr><td>Barra fixa</td><td>6 séries × 5 repetições</td></tr>
+   <tr><td>Descanso</td><td>60 s apenas</td></tr><tr><td>Face pull</td><td>3×15</td></tr></table>
+   <br>Descanso curto é o estímulo. Se não completar as 6 séries, pare — não force até a falha.`},
+  {t:'Longão 10 km com final progressivo',s:'Últimos 3 km em 5:30',tag:'Longão',tipo:'corrida',
+   run:{aq:'Comece lento.',pr:`<table class="t"><tr><td>km 1–7</td><td>6:30/km</td></tr><tr><td>km 8–10</td><td><b>5:30/km</b></td></tr></table>`,
+   de:'Caminhada 8 min + alongamento.',tot:'10 km',
+   ad:adBlk('TAF · Longão progressivo',[
+     ['Bloco 1 — Base','<b>7,0 km</b> · alvo 6:30/km'],
+     ['Bloco 2 — Final','<b>3,0 km</b> · alvo <b>5:30/km</b>']])}}
+]},
+
+{n:'Semana 6 · Leve + simulado completo',d:[
+  {t:'Descanso total',s:'Sem corrida, sem barra, sem GtG',tag:'Folga',tipo:'folga'},
+  easy(5,5),
+  {t:'5×400 m rápidos',s:'Volume baixo · força leve',tag:'Intervalado',tipo:'corrida',
+   run:{aq:AQ,pr:`<table class="t"><tr><td>5× 400 m</td><td><b>1:48 cada</b></td></tr>
+   <tr><td>Recuperação</td><td>90 s de trote lento</td></tr></table>`,
+   de:DE,tot:'≈ 6 km no total',
+   ad:adBlk('TAF · 400 m',[
+     ['Repetições','<span class="rep">5×</span>'],
+     ['Bloco Intervalo','<b>400 m</b> · alvo <b>1:48</b> (4:30/km)'],
+     ['Bloco Recuperação','<b>90 s</b>']])},forca:FORCA_L},
+  {t:'Barra pesado A — Lastro',s:'5×3',tag:'Barra',tipo:'barra',barra:BA_LASTRO},
+  {t:'Limiar 15 min',s:'Manutenção antes do simulado',tag:'Limiar',tipo:'corrida',
+   run:{aq:AQ,pr:`<b>15 min contínuos em 5:25/km.</b>`,de:DE,tot:'≈ 6,5 km no total',
+   ad:adBlk('TAF · Limiar',[['Repetições','<span class="rep">1×</span>'],['Bloco Limiar','<b>15 min</b> · alvo <b>5:25/km</b>']])}},
+  {t:'Barra leve',s:'Só negativas e face pull',tag:'Barra',tipo:'barra',barra:BA_L},
+  {t:'SIMULADO TAF completo',s:'Ordem e intervalos exatos da sua OM',tag:'Aferição',tipo:'prova',
+   nota:`<b>Não é treino — é ensaio de logística.</b> Execute exatamente na ordem que sua OM aplica, com os mesmos intervalos entre as provas.<br><br>
+   <b>Registre:</b><ul><li>Tempo do 3,2 km e os 8 parciais</li><li>Repetições de barra</li>
+   <li>Demais provas aplicadas na sua OM</li><li><b>Como se sentiu entre uma prova e outra</b> e em qual delas perdeu rendimento</li></ul>
+   Esse último item é o que mais me serve para ajustar as duas últimas semanas.`,
+   run:{aq:AQ,pr:'Conforme a ordem oficial da sua OM.',de:'10 min de trote leve.',tot:'Variável',
+   ad:adBlk('TAF · Teste 3.200 m',[['Bloco central','<b>3,20 km</b> · sem alvo'],['Auto-lap','a cada 400 m']])}}
+]},
+
+{n:'Semana 7 · Pico específico',d:[
+  {t:'Descanso total',s:'Sem corrida, sem barra, sem GtG',tag:'Folga',tipo:'folga'},
+  easy(6,6),
+  {t:'Prova fracionada — 1600+800+400+400',s:'A sessão mais importante do ciclo · + força',tag:'Intervalado',tipo:'corrida',
+   run:{aq:AQ,pr:`<table class="t"><tr><td>1600 m</td><td><b>7:44</b></td></tr>
+   <tr><td>rec 2 min</td><td>trote lento</td></tr>
+   <tr><td>800 m</td><td><b>3:52</b></td></tr>
+   <tr><td>rec 2 min</td><td>trote lento</td></tr>
+   <tr><td>400 m</td><td><b>1:54</b></td></tr>
+   <tr><td>rec 2 min</td><td>trote lento</td></tr>
+   <tr><td>400 m</td><td><b>1:52</b> — tudo o que sobrou</td></tr></table>
+   <br><b>São 3.200 m em ritmo de prova, fracionados.</b> É o ensaio mais próximo do teste real que existe no plano. Se completar bem, você está pronto.`,
+   de:DE,tot:'≈ 8 km no total',
+   ad:adBlk('TAF · Pirâmide de prova',[
+     ['Estrutura','sequencial, <b>sem repetição</b>'],
+     ['Blocos','1600 → rec → 800 → rec → 400 → rec → 400'],
+     ['Alvos','7:44 · 3:52 · 1:54 · 1:52'],
+     ['Recuperações','2 min cada']],
+     'Este é o único treino do ciclo sem bloco repetido — monte os 7 blocos na mão e salve.')},forca:FORCA},
+  {t:'Barra pesado A — Lastro pesado',s:'4×2, carga máxima',tag:'Barra',tipo:'barra',
+   barra:`<table class="t"><tr><td>Barra com lastro</td><td>4 séries × 2 repetições, carga alta</td></tr>
+   <tr><td>Descanso</td><td>3 min entre séries</td></tr>
+   <tr><td>Isometria no topo</td><td>3× de 25 s</td></tr>
+   <tr><td>Face pull</td><td>3×15</td></tr></table>`},
+  {t:'Limiar 3×10 min',s:'Ritmo mais forte do ciclo',tag:'Limiar',tipo:'corrida',
+   run:{aq:AQ,pr:`<table class="t"><tr><td>3× 10 min</td><td><b>5:15/km</b></td></tr>
+   <tr><td>Recuperação</td><td>2 min de trote lento</td></tr></table>`,
+   de:DE,tot:'≈ 9 km no total',
+   ad:adBlk('TAF · Limiar',[['Repetições','<span class="rep">3×</span>'],
+     ['Bloco Limiar','<b>10 min</b> · alvo <b>5:15/km</b>'],['Bloco Recuperação','<b>2 min</b>']])}},
+  {t:'Barra pesado B — 3 séries no limite',s:'Máximo menos 2, rec 3 min',tag:'Barra',tipo:'barra',
+   barra:`<table class="t"><tr><td>Barra fixa</td><td>3 séries de (seu máximo − 2)</td></tr>
+   <tr><td>Descanso</td><td>3 min entre séries</td></tr><tr><td>Face pull</td><td>3×15</td></tr></table>
+   <br>Última sessão dura de barra do ciclo.`},
+  {t:'Longão 9 km com final progressivo',s:'Últimos 3 km em 5:25',tag:'Longão',tipo:'corrida',
+   run:{aq:'Comece lento.',pr:`<table class="t"><tr><td>km 1–6</td><td>6:30/km</td></tr><tr><td>km 7–9</td><td><b>5:25/km</b></td></tr></table>`,
+   de:'Caminhada 8 min.',tot:'9 km',
+   ad:adBlk('TAF · Longão progressivo',[
+     ['Bloco 1 — Base','<b>6,0 km</b> · alvo 6:30/km'],
+     ['Bloco 2 — Final','<b>3,0 km</b> · alvo <b>5:25/km</b>']])}}
+]},
+
+{n:'Semana 8 · Polimento e avaliação',d:[
+  {t:'Descanso total',s:'Sem corrida, sem barra, sem GtG',tag:'Folga',tipo:'folga'},
+  easy(5,4),
+  {t:'4×400 m soltos',s:'Manter afiado, sem cansar · sem força de perna',tag:'Intervalado',tipo:'corrida',
+   run:{aq:AQ,pr:`<table class="t"><tr><td>4× 400 m</td><td><b>1:50 cada</b></td></tr>
+   <tr><td>Recuperação</td><td>2 min de trote lento</td></tr></table>
+   <br>Sensação de sobra. <b>Nenhum treino desta semana constrói condicionamento</b> — só mantém o sistema afiado. Ansiedade de treinar mais aqui é o que estraga a prova.`,
+   de:DE,tot:'≈ 6 km no total',
+   ad:adBlk('TAF · 400 m',[['Repetições','<span class="rep">4×</span>'],
+     ['Bloco Intervalo','<b>400 m</b> · alvo <b>1:50</b>'],['Bloco Recuperação','<b>2 min</b>']])},
+   forca:'Sem força de perna nesta semana.'},
+  {t:'Barra leve',s:'3 negativas e face pull',tag:'Barra',tipo:'barra',
+   barra:`<table class="t"><tr><td>Negativa na barra</td><td>3×1, desce em 5 s</td></tr>
+   <tr><td>Face pull</td><td>3×15</td></tr></table>`},
+  {t:'Limiar 10 min',s:'Bloco curto de manutenção',tag:'Limiar',tipo:'corrida',
+   run:{aq:AQ,pr:`<b>10 min contínuos em 5:20/km.</b><br><br>Último estímulo antes da prova.`,
+   de:DE,tot:'≈ 5,5 km no total',
+   ad:adBlk('TAF · Limiar',[['Repetições','<span class="rep">1×</span>'],['Bloco Limiar','<b>10 min</b> · alvo <b>5:20/km</b>']])}},
+  {t:'Descanso total',s:'Nem GtG. Véspera de prova.',tag:'Folga',tipo:'folga'},
+  {t:'AVALIAÇÃO — 3,2 km + barra',s:'O dia',tag:'Prova',tipo:'prova',
+   nota:`<b>Aquecimento é obrigatório</b>, mesmo com pouco tempo. Se der só 5 min: 3 min de trote + 3 tiros de 20 s. Largar frio custa 20 a 30 s.<br><br>
+   <b>Parciais por volta:</b><table class="t">
+   <tr><td>1:56</td><td>15:28 — o mínimo</td></tr>
+   <tr><td>1:52</td><td>15:00</td></tr>
+   <tr><td>1:48</td><td>14:24</td></tr></table>
+   <br><b>Regra tática:</b> as duas primeiras voltas vão parecer devagar demais. É exatamente assim que deve ser. Sair forte e agonizar rende menos que sair controlado e acelerar no fim.`,
+   run:{aq:AQ,pr:'<b>3.200 m.</b> Volta 1–2 em 1:56. Volta 3–6 travado. Volta 7–8 tudo o que sobrou.',
+   de:'Trote leve e caminhada.',tot:'—',
+   ad:adBlk('TAF · Teste 3.200 m',[['Bloco central','<b>3,20 km</b>'],['Auto-lap','a cada 400 m']],
+   'No dia oficial vale o cronômetro da avaliação. O app é só o seu registro.')}}
+]}];
+
+const GTG=['4 rep × 6 séries · 24/dia','4 rep × 7 séries · 28/dia','5 rep × 6 séries · 30/dia',
+'5 rep × 6 séries · 30/dia','5 rep × 7 séries · 35/dia','5 rep × 7 séries · 35/dia',
+'5 rep × 6 séries · 30/dia','4 rep × 4 séries · 16/dia'];
+
+/* ================= treinos padrão ================= */
+const PAD=[
+{t:'TAF · Fácil + Tiros',u:'Usado 8× — todas as segundas',
+ b:[['1','Aquecimento','4 min','trote 7:00/km'],
+    ['2','Corrida','5,0 km','alvo 6:30/km'],
+    ['3','Rápido','20 s','forte, ~4:00/km'],
+    ['4','Recuperação','60 s','caminhada'],
+    ['—','repetir 3 e 4','5×',''],
+    ['5','Desaquecimento','5 min','caminhada']],
+ n:'A distância do bloco 2 muda entre 5 e 6 km e os tiros entre 4 e 6. Salve com 5 km / 5 tiros e ajuste no dia.'},
+{t:'TAF · 400 m',u:'Usado 4× — semanas 1, 3, 6 e 8',
+ b:[['1','Aquecimento','10 min','trote 6:40/km'],
+    ['2','Intervalo','400 m','alvo 1:52'],
+    ['3','Recuperação','90 s','trote lento'],
+    ['—','repetir 2 e 3','6×',''],
+    ['4','Desaquecimento','10 min','trote 7:00/km']],
+ n:'Muda só o número de repetições (4 a 6) e o alvo (1:48 a 1:52). Salve na configuração mais usada: 6× em 1:52.'},
+{t:'TAF · 800 m',u:'Usado 1× — semana 2',
+ b:[['1','Aquecimento','10 min','trote 6:40/km'],
+    ['2','Intervalo','800 m','alvo 3:52'],
+    ['3','Recuperação','2 min','trote lento'],
+    ['—','repetir 2 e 3','4×',''],
+    ['4','Desaquecimento','10 min','trote 7:00/km']],
+ n:'3:52 nos 800 m é exatamente o ritmo do mínimo do TAF. É o ritmo mais importante do plano inteiro.'},
+{t:'TAF · 1000 m',u:'Usado 1× — semana 5',
+ b:[['1','Aquecimento','10 min','trote 6:40/km'],
+    ['2','Intervalo','1,00 km','alvo 4:45'],
+    ['3','Recuperação','2 min','trote lento'],
+    ['—','repetir 2 e 3','3×',''],
+    ['4','Desaquecimento','10 min','trote 7:00/km']],
+ n:''},
+{t:'TAF · 1600 m',u:'Usado 1× — semana 4',
+ b:[['1','Aquecimento','10 min','trote 6:40/km'],
+    ['2','Intervalo','1,60 km','alvo 7:44'],
+    ['3','Recuperação','3 min','trote lento'],
+    ['—','repetir 2 e 3','2×',''],
+    ['4','Desaquecimento','10 min','trote 7:00/km']],
+ n:'Metade da prova, duas vezes.'},
+{t:'TAF · Limiar',u:'Usado 8× — todas as quintas',
+ b:[['1','Aquecimento','10 min','trote 6:40/km'],
+    ['2','Limiar','10 min','alvo 5:25/km'],
+    ['3','Recuperação','3 min','trote lento'],
+    ['—','repetir 2 e 3','2×',''],
+    ['4','Desaquecimento','10 min','trote 7:00/km']],
+ n:'O padrão mais reaproveitado do ciclo. Duração do bloco 2 varia de 10 a 25 min, alvo de 5:15 a 5:30, repetições de 1 a 3. Salve como está e ajuste os três campos toda quinta.'},
+{t:'TAF · Longão progressivo',u:'Usado 4× — semanas 2, 4, 5 e 7',
+ b:[['1','Base','7,0 km','alvo 6:30/km'],
+    ['2','Final forte','3,0 km','alvo 5:35/km'],
+    ['3','Desaquecimento','5 min','caminhada']],
+ n:'Sem aquecimento separado — os 2 primeiros km do bloco 1 já cumprem esse papel. O aviso sonoro na virada do bloco 1 para o 2 é o que faz a sessão funcionar; mantenha o áudio ligado.'},
+{t:'TAF · Pirâmide de prova',u:'Usado 1× — semana 7, sessão-chave',
+ b:[['1','Aquecimento','10 min','trote 6:40/km'],
+    ['2','Intervalo','1,60 km','alvo 7:44'],
+    ['3','Recuperação','2 min','trote lento'],
+    ['4','Intervalo','800 m','alvo 3:52'],
+    ['5','Recuperação','2 min','trote lento'],
+    ['6','Intervalo','400 m','alvo 1:54'],
+    ['7','Recuperação','2 min','trote lento'],
+    ['8','Intervalo','400 m','alvo 1:52'],
+    ['9','Desaquecimento','10 min','trote 7:00/km']],
+ n:'Único treino sem bloco repetido — os 9 blocos são montados na mão. Vale o trabalho: são 3.200 m em ritmo de prova, fracionados.'},
+{t:'TAF · Teste 3.200 m',u:'Usado 4× — 05/set, 19/set, 10/out, 24/out',
+ b:[['1','Aquecimento','10 min','trote 6:40/km'],
+    ['2','Teste','3,20 km','sem alvo — máximo esforço'],
+    ['3','Desaquecimento','10 min','trote 7:00/km']],
+ n:'Não coloque alvo de ritmo no bloco 2. Alvo em dia de teste faz você correr para o número em vez de correr para o limite. Ligue o auto-lap a cada 400 m e anote os 8 parciais.'}
+];
+
+/* ================= ritmos ================= */
+const RIT=`
+<div class="h2">Ritmos de treino</div>
+<div class="sb"><table class="t">
+<tr><td>Fácil / regenerativo</td><td>6:20 – 6:55 /km</td></tr>
+<tr><td>Longão</td><td>6:20 – 6:50 /km</td></tr>
+<tr><td>Limiar</td><td>5:15 – 5:30 /km</td></tr>
+<tr><td>Intervalado</td><td>4:45 – 5:05 /km</td></tr>
+<tr><td>Ritmo de prova</td><td>4:50 /km</td></tr>
+<tr><td>Tiros curtos</td><td>4:30 – 4:45 /km</td></tr>
+</table></div>
+
+<div class="h2">Parciais por volta de 400 m</div>
+<div class="sb"><table class="t">
+<tr><td>1:56</td><td><b>15:28</b> — o mínimo do TAF</td></tr>
+<tr><td>1:52</td><td>15:00</td></tr>
+<tr><td>1:50</td><td>14:40</td></tr>
+<tr><td>1:48</td><td>14:24</td></tr>
+<tr><td>1:38</td><td>13:04 — grau 10</td></tr>
+</table><br>Decore o 1:56. É a única volta que precisa estar no automático.</div>
+
+<div class="h2">Regra tática da prova</div>
+<div class="sb key">As <b>duas primeiras voltas devem parecer devagar demais</b>. Largar rápido é o que causa a maioria dos casos de apagar no final — inclusive o seu.<br><br>
+Volta 1–2: 1:56, controlado.<br>Volta 3–6: travado no mesmo ritmo.<br>Volta 7–8: tudo o que sobrou.</div>
+
+<div class="h2">Calor de Manaus</div>
+<div class="sb">O calor soma <b>20 a 30 s por km</b>. Treine entre 5h e 6h, ou depois das 19h.<br><br>
+Se treinar no calor e não bater o alvo, o problema é o horário, não o condicionamento. Anote a hora do treino junto com o resultado.</div>
+
+<div class="h2">Sobre o relógio</div>
+<div class="sb">A distância do Haylou confere com o Strava — <b>seu pace médio está correto</b>. O que não é confiável é o pace instantâneo, aquele número que fica pulando.<br><br>
+<table class="t">
+<tr><td>Tela da corrida</td><td>trocar "pace atual" por <b>pace médio</b></td></tr>
+<tr><td>Configuração</td><td>ligar <b>auto-lap a cada 1 km</b></td></tr>
+<tr><td>Pista de 400 m</td><td>lap manual a cada volta</td></tr>
+</table><br>
+<b>Durante o tiro, não olhe o relógio.</b> Olhe só o tempo da volta ao terminar.</div>
+
+<div class="h2">Segundos de graça</div>
+<div class="sb">Entre 30 e 50 s que você ganha sem nenhum ganho de condicionamento:
+<ul><li>Aquecimento completo antes de largar</li>
+<li>Ritmo uniforme em vez de acelerar e frear</li>
+<li>Tênis leve</li>
+<li>Não testar com perna cansada de serviço ou entrega</li></ul></div>
+
+<div class="h2">Se faltar tempo ou energia</div>
+<div class="sb key">Corte a barra. <b>Nunca a corrida.</b><br><br>
+Reprovar por tempo é risco real. Perder pontos na barra é só nota.</div>`;
+
+/* ================= runtime ================= */
+const DOW=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const MES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+const START=new Date(2026,7,30), PROVA=new Date(2026,9,24), KEY='plano-taf:v2';
+let S={wk:0,ck:{},res:{}},tmr=null;
+
+function dateOf(w,i){const d=new Date(START);d.setDate(d.getDate()+w*7+i);return d;}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1600);}
+
+let LS=null;
+try{const k='__t';localStorage.setItem(k,'1');localStorage.removeItem(k);LS=localStorage;}catch(e){LS=null;}
+
+function load(){
+  try{const r=LS&&LS.getItem(KEY);if(r)S=Object.assign(S,JSON.parse(r));}catch(e){}
+  if(!LS)setTimeout(()=>toast('Este visualizador bloqueia o salvamento — publique no GitHub Pages'),900);
+  const t=new Date();t.setHours(0,0,0,0);
+  const diff=Math.floor((t-START)/864e5);
+  if(diff>=0&&diff<56&&!S._t)S.wk=Math.floor(diff/7);
+  buildPad();document.getElementById('vRit').innerHTML=RIT;
+  render();
+}
+function save(){clearTimeout(tmr);tmr=setTimeout(()=>{
+  if(!LS)return;
+  try{LS.setItem(KEY,JSON.stringify(S));}catch(e){toast('Não salvou — memória cheia');}},300);}
+
+/* ---- backup ---- */
+function exportar(){
+  const blob=new Blob([JSON.stringify(S,null,1)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='backup-taf-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();URL.revokeObjectURL(a.href);
+}
+function importar(ev){
+  const f=ev.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{try{
+    const o=JSON.parse(r.result);
+    S=Object.assign(S,o);save();render();toast('Backup restaurado');
+  }catch(e){toast('Arquivo inválido');}};
+  r.readAsText(f);ev.target.value='';
+}
+function zerar(){
+  if(!confirm('Apagar todas as marcações e anotações? Não tem volta.'))return;
+  S={wk:S.wk,ck:{},res:{}};save();render();toast('Zerado');
+}
+
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+  const t=b.dataset.t;
+  vCal.style.display=t==='cal'?'':'none';
+  vPad.style.display=t==='pad'?'':'none';
+  vRit.style.display=t==='rit'?'':'none';
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+
+function buildPad(){
+  let h=`<div class="note"><b>Antes de montar.</b> O app da adidas tem função de treino intervalado, mas eu não tenho certeza se o construtor personalizado está liberado na versão gratuita ou só na Premium, nem se os campos têm exatamente esses nomes na sua versão. Confira ao abrir.<br><br>
+  Se o construtor não estiver disponível, use o padrão como corrida livre e cronometre cada tiro no botão de volta do relógio — a sessão funciona igual, você só perde o aviso automático.</div>
+  <div class="note"><b>Nomeie exatamente assim.</b> Os nomes começam todos com "TAF ·" para ficarem juntos na lista do app. Monte os 9 uma vez e depois é só abrir e ajustar dois ou três campos.</div>`;
+  PAD.forEach((p,i)=>{
+    let rows='';
+    p.b.forEach(r=>{
+      const dim=r[0]==='—';
+      rows+=`<tr><td>${dim?'<span class="rep">↻</span>':'Bloco '+r[0]}</td><td>${dim?'<span class="rep">'+r[1]+' · '+r[2]+'</span>':'<b>'+r[1]+'</b> · '+r[2]+(r[3]?'<br><span style="color:#8FA88C">'+r[3]+'</span>':'')}</td></tr>`;
+    });
+    h+=`<div class="pcard" data-p="${i}">
+      <div class="ph"><div class="pn"><div class="pt">${p.t}</div><div class="pu">${p.u}</div></div><div class="ar">›</div></div>
+      <div class="pb"><div class="ad"><table>${rows}</table></div>
+      ${p.n?`<div class="sec"><div class="sl">Observação</div><div class="sb">${p.n}</div></div>`:''}</div></div>`;
+  });
+  document.getElementById('vPad').innerHTML=h;
+  document.querySelectorAll('.pcard .ph').forEach(el=>el.onclick=()=>el.parentElement.classList.toggle('open'));
+}
+
+function stats(){
+  const n=Object.values(S.ck).filter(Boolean).length;
+  document.getElementById('sDone').innerHTML=n+'<small>/56</small>';
+  document.getElementById('sBar').style.width=(n/56*100)+'%';
+  const t=new Date();t.setHours(0,0,0,0);
+  const dd=Math.round((PROVA-t)/864e5);
+  document.getElementById('sDays').innerHTML=(dd>=0?dd:0)+'<small> dias</small>';
+  const tot=Math.round((PROVA-START)/864e5);
+  document.getElementById('sBar2').style.width=Math.max(0,Math.min(100,(tot-dd)/tot*100))+'%';
+}
+
+function render(){
+  const nav=document.getElementById('nav');nav.innerHTML='';
+  for(let w=0;w<8;w++){
+    const full=P[w].d.every((_,i)=>S.ck[w+'-'+i]);
+    const b=document.createElement('div');
+    b.className='wkb'+(w===S.wk?' on':'')+(full?' full':'');
+    b.textContent='S'+(w+1);
+    b.onclick=()=>{S.wk=w;S._t=1;save();render();window.scrollTo({top:0,behavior:'smooth'});};
+    nav.appendChild(b);
+  }
+  const w=S.wk;
+  document.getElementById('wkN').textContent=P[w].n;
+  const a=dateOf(w,0),b=dateOf(w,6);
+  document.getElementById('wkD').textContent=
+    a.getDate()+' '+MES[a.getMonth()]+' — '+b.getDate()+' '+MES[b.getMonth()]+'  ·  GtG: '+GTG[w];
+  const L=document.getElementById('list');L.innerHTML='';
+  P[w].d.forEach((d,i)=>L.appendChild(dayCard(d,w,i)));
+  stats();
+}
+
+function dayCard(d,w,i){
+  const key=w+'-'+i,date=dateOf(w,i);
+  const today=new Date();today.setHours(0,0,0,0);
+  const isToday=date.getTime()===today.getTime();
+  const done=!!S.ck[key];
+  const n=document.createElement('div');
+  n.className='day '+d.tipo+(done?' ok':'')+(isToday?' hoje':'')+(S['o'+key]?' open':'');
+  const tagc=(d.tag==='Aferição'||d.tag==='Prova')?'p':d.tag==='Barra'?'b':d.tag==='Folga'?'f':'';
+  const h=document.createElement('div');h.className='dh';
+  h.innerHTML=`<div class="dd"><div class="dw">${DOW[date.getDay()]}</div><div class="dn">${date.getDate()}/${date.getMonth()+1}</div></div>
+    <div class="dc"><span class="tag ${tagc}">${d.tag}</span>${isToday?'<span class="hj">HOJE</span>':''}
+    <div class="dt">${d.t}</div><div class="ds">${d.s}</div></div>`;
+  const ck=document.createElement('div');ck.className='ck';ck.textContent='✓';
+  ck.onclick=e=>{e.stopPropagation();S.ck[key]=!S.ck[key];save();render();};
+  h.appendChild(ck);
+  h.onclick=()=>{S['o'+key]=!S['o'+key];render();};
+  n.appendChild(h);
+
+  const det=document.createElement('div');det.className='det';
+  const sec=(l,html,cls)=>`<div class="sec"><div class="sl">${l}</div><div class="${cls==='ad'?'ad':'sb '+(cls||'')}">${html}</div></div>`;
+  let x='';
+  if(d.nota) x+=sec('Antes de tudo',d.nota,'key');
+  if(d.run){
+    x+=sec('Aquecimento',d.run.aq);
+    x+=sec('Treino principal',d.run.pr,'key');
+    x+=sec('Desaquecimento',d.run.de);
+    x+=sec('Montagem no adidas Running',d.run.ad,'ad');
+    x+=`<div class="tot">Volume: ${d.run.tot}</div>`;
+  }
+  if(d.forca) x+=sec('Força de perna — depois da corrida',d.forca);
+  if(d.barra) x+=sec('Barra — sessão pesada',d.barra);
+  if(d.tipo!=='folga') x+=sec('GtG do dia',GTG[w]+' — mínimo 1 h entre séries, à noite. <b>Nunca até a falha.</b>');
+  else x+=sec('Por que folga','Domingo é seu dia de melhor rendimento possível. Se um teste inopinado cair na segunda, é este descanso que te dá a nota. Não treine.');
+  det.innerHTML=x;
+
+  const inp=document.createElement('input');
+  inp.className='res';inp.placeholder='Resultado, parciais, como foi o final…';
+  inp.value=S.res[key]||'';
+  inp.oninput=()=>{S.res[key]=inp.value;save();};
+  det.appendChild(inp);
+  n.appendChild(det);
+  return n;
+}
+load();
+</script>
+</body>
+</html>
